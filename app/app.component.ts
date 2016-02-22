@@ -1,47 +1,77 @@
-import { Component } from 'angular2/core';
-import { Hero } from './hero';
-import { HeroDetailComponent } from './hero-detail.component';
-import {HEROES} from './mock-heroes';
-import {OnInit} from 'angular2/core';
+import {Component, OnInit} from 'angular2/core';
+import {ROUTER_PROVIDERS, ROUTER_DIRECTIVES, RouteConfig} from 'angular2/router';
+import {DashboardComponent} from './dashboard.component';
+import {HeroDetailComponent} from './hero-detail.component';
+import {HeroesComponent} from './heroes.component';
 import {HeroService} from './hero.service';
 @Component({
     selector: 'my-app',
     template: `
-		<h1>{{title}}</h1>
-		<h2>My Heroes</h2>
-		<ul class="list-group col-sm-6">
-			<li class="list-group-item" *ngFor="#hero of heroes" (click)="onSelect(hero)" [class.selected]="hero == selectedHero">
-				<span class="badge">{{hero.id}}</span>{{hero.name}}
-			</li>
-		</ul>
-		<my-hero-detail [hero]="selectedHero"></my-hero-detail>
-
-	`,
-	styles: [
-		`
-			.selected {
-				background-color: #CFD8DC !important;
-      			color: white;
-			}
-		`
-	],
-	directives: [HeroDetailComponent],
-	providers: [HeroService]
+        <h1>{{title}}</h1>
+        <nav>
+            <a [routerLink]="['Dashboard']">Dashboard</a>
+            <a [routerLink]="['Heroes']">Heroes</a>
+        </nav>
+        <router-outlet></router-outlet>
+    `,
+    styles : [
+        `
+            h1 {
+                font-size: 1.2em;
+                color: #999;
+                margin-bottom: 0;
+            }
+            h2 {
+                font-size: 2em;
+                margin-top: 0;
+                padding-top: 0;
+            }
+            nav a {
+                padding: 5px 10px;
+                text-decoration: none;
+                margin-top: 10px;
+                display: inline-block;
+                background-color: #eee;
+                border-radius: 4px;
+            }
+            nav a:visited, a:link {
+                color: #607D8B;
+            }
+            nav a:hover {
+                color: #039be5;
+                background-color: #CFD8DC;
+            }
+            nav a.router-link-active {
+                color: #039be5;
+            }        
+        
+        `    
+    ],
+    directives: [ROUTER_DIRECTIVES ],
+    providers: [ROUTER_PROVIDERS, HeroService]
 })
-export class AppComponent implements OnInit{
-  title = 'Tour of Heroes';
-  heroes: Hero[];
-  selectedHero: Hero;
+@RouteConfig([
+    {
+        path: '/dashboard',
+        name: 'Dashboard',
+        component: DashboardComponent,
+        useAsDefault: true
+    },
+    {
+        path: '/dashboard/:id',
+        name: 'HeroDetail',
+        component: HeroDetailComponent,
+    },
+    {
+        path: '/heroes',
+        name: 'Heroes',
+        component: HeroesComponent
+    }
+])
 
-  constructor(private _heroService: HeroService) { }
+export class AppComponent implements OnInit {
+    public title = 'Tour of Heroes';
+    constructor() { }
 
-  getHeroes() {
-    this._heroService.getHeroes().then(heroes => this.heroes = heroes);
-  }
-  
-  ngOnInit() {
-    this.getHeroes();
-  }
-
-  onSelect(hero: Hero) { this.selectedHero = hero; }
+    ngOnInit() { }
 }
